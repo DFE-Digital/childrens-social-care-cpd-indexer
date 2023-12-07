@@ -1,18 +1,11 @@
 name: Docker Publish
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 on:
   release:
     types: [published]
 
 env:
-  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
   RELEASE_TAG: ${{ github.event.release.tag_name }}
 
@@ -23,8 +16,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
+      # This is used to complete the identity challenge with sigstore/fulcio when running outside of PRs.
       id-token: write
 
     steps:
@@ -79,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./src
-          file: {context}/Childrens-Social-Care-CPD-Indexer/Dockerfile
+          file: Childrens-Social-Care-CPD-Indexer/Dockerfile
           #push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.IMAGE_TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
