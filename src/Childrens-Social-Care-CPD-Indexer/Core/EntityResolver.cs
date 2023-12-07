@@ -4,7 +4,7 @@ namespace Childrens_Social_Care_CPD_Indexer.Core;
 
 internal class EntityResolver : IContentTypeResolver
 {
-    public Type? Resolve(string contentTypeId)
+    public Type? Resolve(string? contentTypeId)
     {
         return contentTypeId switch
         {

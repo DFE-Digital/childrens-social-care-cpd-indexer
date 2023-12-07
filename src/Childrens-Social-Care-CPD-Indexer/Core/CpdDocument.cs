@@ -1,9 +1,11 @@
-﻿using Azure.Search.Documents.Indexes;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Childrens_Social_Care_CPD_Indexer.Core;
 
+[ExcludeFromCodeCoverage]
 internal partial class CpdDocument(string id)
 {
     [SimpleField(IsKey = true)]
