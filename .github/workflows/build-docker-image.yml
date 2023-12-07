@@ -72,7 +72,7 @@ jobs:
         with:
           context: ./src
           file: ./src/Childrens-Social-Care-CPD-Indexer/Dockerfile
-          #push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ env.IMAGE_TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
