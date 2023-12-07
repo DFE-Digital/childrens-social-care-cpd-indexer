@@ -1,14 +1,17 @@
-﻿using Contentful.Core.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using Contentful.Core.Models;
 using Newtonsoft.Json;
 
 namespace Childrens_Social_Care_CPD_Indexer.Core;
 
-public static class ContentTypes
+[ExcludeFromCodeCoverage]
+internal static class ContentTypes
 {
     public const string Resource = "Resource";
 }
 
-public class Content : IContent
+[ExcludeFromCodeCoverage]
+internal class Content : IContent
 {
     public string? Id { get; set; }
     public string? ContentType { get; set; }

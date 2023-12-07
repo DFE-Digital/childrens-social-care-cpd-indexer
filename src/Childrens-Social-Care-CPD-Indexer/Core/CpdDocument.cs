@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Childrens_Social_Care_CPD_Indexer.Core;
 
-public partial class CpdDocument(string id)
+internal partial class CpdDocument(string id)
 {
     [SimpleField(IsKey = true)]
     public string? Id { get; set; } = Base64UrlEncoder.Encode(id);

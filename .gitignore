@@ -410,3 +410,5 @@ terraform.rc
 *.vsix
 
 .sonarqube/
+
+.idea/

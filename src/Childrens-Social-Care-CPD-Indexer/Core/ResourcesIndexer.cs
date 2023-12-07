@@ -3,7 +3,7 @@ using Azure.Search.Documents.Indexes.Models;
 
 namespace Childrens_Social_Care_CPD_Indexer.Core;
 
-public class ResourcesIndexer(SearchIndexClient searchIndexClient, IDocumentFetcher documentFetcher, ILogger logger)
+internal class ResourcesIndexer(SearchIndexClient searchIndexClient, IDocumentFetcher documentFetcher, ILogger logger)
 {
     public async Task DeleteIndexAsync(string indexName, CancellationToken cancellationToken = default)
     {

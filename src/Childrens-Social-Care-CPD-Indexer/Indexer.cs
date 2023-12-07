@@ -9,7 +9,7 @@ using CoreIndexer = Childrens_Social_Care_CPD_Indexer.Core.ResourcesIndexer;
 
 namespace Childrens_Social_Care_CPD_Indexer;
 
-public class Indexer(TelemetryClient telemetryClient, ILogger<Indexer> logger, ILogger<CoreIndexer> coreLogger, IResourcesIndexerConfig config) : IHostedService
+internal class Indexer(TelemetryClient telemetryClient, ILogger<Indexer> logger, ILogger<CoreIndexer> coreLogger, IResourcesIndexerConfig config) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -30,10 +30,7 @@ public class Indexer(TelemetryClient telemetryClient, ILogger<Indexer> logger, I
                 }
             }
 
-            if (!cancellationToken.IsCancellationRequested)
-            {
-                await indexer.PopulateIndexAsync(config.IndexName, config.BatchSize, cancellationToken);
-            }
+            await indexer.PopulateIndexAsync(config.IndexName, config.BatchSize, cancellationToken);
 
         }
         catch (Exception ex)

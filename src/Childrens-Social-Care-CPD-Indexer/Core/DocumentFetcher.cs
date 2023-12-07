@@ -4,7 +4,7 @@ using Contentful.Core.Search;
 
 namespace Childrens_Social_Care_CPD_Indexer.Core;
 
-public class DocumentFetcher(IContentfulClient client) : IDocumentFetcher
+internal class DocumentFetcher(IContentfulClient client) : IDocumentFetcher
 {
     public async Task<CpdDocument[]> FetchBatchAsync(int limit, int skip, CancellationToken cancellationToken = default)
     {

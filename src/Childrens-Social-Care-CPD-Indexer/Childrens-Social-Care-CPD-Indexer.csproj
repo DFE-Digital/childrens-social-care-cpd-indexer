@@ -9,6 +9,11 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
+    <ItemGroup>
+	    <InternalsVisibleTo Include="Childrens-Social-Care-CPD-Indexer.Tests" />
+	    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Azure.Search.Documents" Version="11.5.1" />
     <PackageReference Include="contentful.aspnetcore" Version="7.4.3" />
