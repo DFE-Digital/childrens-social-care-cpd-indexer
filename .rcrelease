@@ -1,0 +1,18 @@
+{
+  "branches": ["main", { "name": "next", "prerelease": true }],
+  "dryRun": false,
+  "ci": true,
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "angular",
+        "parserOpts": {
+          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES", "BREAKING"]
+        }
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
