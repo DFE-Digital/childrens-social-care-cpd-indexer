@@ -78,7 +78,8 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-          context: ./src/Childrens-Social-Care-CPD-Indexer
+          context: ./src
+          file: {context}/Childrens-Social-Care-CPD-Indexer/Dockerfile
           #push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.IMAGE_TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
