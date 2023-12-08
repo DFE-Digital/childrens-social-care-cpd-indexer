@@ -7,6 +7,13 @@ internal class ResourcesIndexer(SearchIndexClient searchIndexClient, IDocumentFe
 {
     public async Task CreateIndexAsync(string indexName, CancellationToken cancellationToken = default)
     {
+        var index = await searchIndexClient.GetIndexAsync(indexName, cancellationToken);
+        if (index.HasValue)
+        {
+            logger.LogInformation("Index already exists, skipping creation.");
+            return;
+        }
+
         logger.LogInformation("Creating index...");
         var fieldBuilder = new FieldBuilder();
         var searchFields = fieldBuilder.Build(typeof(CpdDocument));
@@ -18,15 +25,10 @@ internal class ResourcesIndexer(SearchIndexClient searchIndexClient, IDocumentFe
     public async Task DeleteIndexAsync(string indexName, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting index...");
-
         var index = await searchIndexClient.GetIndexAsync(indexName, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
-
         if (index.HasValue)
         {
             var deleteResponse = await searchIndexClient.DeleteIndexAsync(indexName, cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (deleteResponse.IsError)
             {
                 logger.LogError("Failed to delete the index");
