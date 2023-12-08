@@ -1,14 +1,33 @@
-﻿using Azure.Search.Documents.Indexes;
+﻿using Azure;
+using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 
 namespace Childrens_Social_Care_CPD_Indexer.Core;
 
 internal class ResourcesIndexer(SearchIndexClient searchIndexClient, IDocumentFetcher documentFetcher, ILogger logger): IResourcesIndexer
 {
+    private async Task<bool> IndexExistsAsync(string indexName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var index = await searchIndexClient.GetIndexAsync(indexName, cancellationToken);
+            return index.HasValue;
+        }
+        catch (RequestFailedException rf)
+        {
+            if (rf.Status == 404)
+            {
+                return false;
+            }
+
+            throw;
+        }
+    }
+
     public async Task CreateIndexAsync(string indexName, CancellationToken cancellationToken = default)
     {
-        var index = await searchIndexClient.GetIndexAsync(indexName, cancellationToken);
-        if (index.HasValue)
+        var indexExists = await IndexExistsAsync(indexName, cancellationToken);
+        if (indexExists)
         {
             logger.LogInformation("Index already exists, skipping creation.");
             return;
@@ -25,8 +44,8 @@ internal class ResourcesIndexer(SearchIndexClient searchIndexClient, IDocumentFe
     public async Task DeleteIndexAsync(string indexName, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting index...");
-        var index = await searchIndexClient.GetIndexAsync(indexName, cancellationToken);
-        if (index.HasValue)
+        var indexExists = await IndexExistsAsync(indexName, cancellationToken);
+        if (indexExists)
         {
             var deleteResponse = await searchIndexClient.DeleteIndexAsync(indexName, cancellationToken);
             if (deleteResponse.IsError)
