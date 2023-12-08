@@ -14,9 +14,9 @@ internal class IndexingService(IResourcesIndexer resourcesIndexer, ILogger<Index
             if (config.RecreateIndex)
             {
                 await resourcesIndexer.DeleteIndexAsync(config.IndexName, cancellationToken);
-                await resourcesIndexer.CreateIndexAsync(config.IndexName, cancellationToken);
             }
 
+            await resourcesIndexer.CreateIndexAsync(config.IndexName, cancellationToken);
             await resourcesIndexer.PopulateIndexAsync(config.IndexName, config.BatchSize, cancellationToken);
 
         }

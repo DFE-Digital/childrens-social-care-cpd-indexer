@@ -30,8 +30,7 @@ public class ResourcesIndexerTest
         // arrange
         var response = Substitute.For<Response<SearchIndex>>();
         response.HasValue.Returns(false);
-        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(response));
+        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(response));
 
         // act
         await _sut.DeleteIndexAsync("foo");
@@ -46,8 +45,7 @@ public class ResourcesIndexerTest
         // arrange
         var response = Substitute.For<Response<SearchIndex>>();
         response.HasValue.Returns(true);
-        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(response));
+        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(response));
 
         // act
         await _sut.DeleteIndexAsync("foo");
@@ -65,10 +63,8 @@ public class ResourcesIndexerTest
         
         var deleteIndexResult = Substitute.For<Response>();
         deleteIndexResult.IsError.Returns(true);
-        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(getIndexResult));
-        _client.DeleteIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(deleteIndexResult));
+        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(getIndexResult));
+        _client.DeleteIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(deleteIndexResult));
 
         // act
         await _sut.DeleteIndexAsync("foo");
@@ -81,6 +77,10 @@ public class ResourcesIndexerTest
     public async Task CreateIndexAsync_Creates_The_Index()
     {
         // arrange
+        var getIndexResult = Substitute.For<Response<SearchIndex>>();
+        getIndexResult.HasValue.Returns(false);
+        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(getIndexResult));
+
         SearchIndex? searchIndex = null;
         await _client.CreateIndexAsync(Arg.Do<SearchIndex>(x => searchIndex = x), Arg.Any<CancellationToken>());
 
@@ -92,7 +92,23 @@ public class ResourcesIndexerTest
         searchIndex.Should().NotBeNull();
         searchIndex!.Name.Should().Be("foo");
     }
-    
+
+    [Test]
+    public async Task CreateIndexAsync_Skips_Index_Creation()
+    {
+        // arrange
+        var getIndexResult = Substitute.For<Response<SearchIndex>>();
+        getIndexResult.HasValue.Returns(true);
+        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(getIndexResult));
+        await _client.CreateIndexAsync(Arg.Any<SearchIndex>(), Arg.Any<CancellationToken>());
+
+        // act
+        await _sut.CreateIndexAsync("foo");
+
+        // assert
+        await _client.Received(0).CreateIndexAsync(Arg.Any<SearchIndex>(), Arg.Any<CancellationToken>());
+    }
+
     [Test]
     public async Task PopulateIndexAsync_Uploads_Documents()
     {
