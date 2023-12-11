@@ -52,8 +52,6 @@ builder.ConfigureServices((context, services) =>
         var telemtryClient = servicesProvider.GetRequiredService<TelemetryClient>();
         return new ResourcesIndexer(searchIndexClient, documentFetcher, logger, telemtryClient);
     });
-
-    
 });
 
 using (var host = builder.Build())
