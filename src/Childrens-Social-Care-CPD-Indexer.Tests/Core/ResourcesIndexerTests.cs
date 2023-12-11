@@ -38,7 +38,7 @@ internal sealed class MockResponse : Response
 
 public class ResourcesIndexerTests
 {
-    private ILogger _logger;
+    private ILogger<ResourcesIndexer> _logger;
     private SearchIndexClient _client;
     private IDocumentFetcher _documentFetcher;
     private ResourcesIndexer _sut;
@@ -50,7 +50,7 @@ public class ResourcesIndexerTests
         _client = Substitute.For<SearchIndexClient>();
         _documentFetcher = Substitute.For<IDocumentFetcher>();
         
-        _sut = new ResourcesIndexer(_client, _documentFetcher, _logger);
+        _sut = new ResourcesIndexer(_client, _documentFetcher, _logger, MockTelemetryClient.Create());
     }
     
     [Test]
@@ -168,7 +168,6 @@ public class ResourcesIndexerTests
 
         await _sut.PopulateIndexAsync("foo", 10);
 
-        await client.Received(2)
-            .UploadDocumentsAsync(documents, Arg.Any<IndexDocumentsOptions>(), Arg.Any<CancellationToken>());
+        await client.Received(2).UploadDocumentsAsync(documents, Arg.Any<IndexDocumentsOptions>(), Arg.Any<CancellationToken>());
     }
 }

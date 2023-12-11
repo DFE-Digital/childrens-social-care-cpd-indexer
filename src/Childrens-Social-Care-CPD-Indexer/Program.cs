@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.ApplicationInsights.WorkerService;
 using Childrens_Social_Care_CPD_Indexer.Core;
 using Childrens_Social_Care_CPD_Indexer;
 using Contentful.Core;
@@ -7,21 +6,30 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Contentful.Core.Configuration;
 using Azure.Search.Documents.Indexes;
 using Azure;
+using Microsoft.ApplicationInsights.WorkerService;
+using Microsoft.ApplicationInsights;
 
 var builder = Host.CreateDefaultBuilder(args);
 
 builder.ConfigureServices((context, services) =>
 {
-    var config = new ResourcesIndexerConfig(context.Configuration);
+    // Our configuration
     services.AddTransient<IResourcesIndexerConfig, ResourcesIndexerConfig>();
+    var config = new ResourcesIndexerConfig(context.Configuration);
 
-    var options = new ApplicationInsightsServiceOptions
+    // Service
+    services.AddHostedService<IndexingService>();
+    
+    // Logging
+    services.AddLogging();
+    var options = new ApplicationInsightsServiceOptions()
     {
         ApplicationVersion = config.ApplicationVersion,
-        ConnectionString = config.AppInsightsConnectionString
+        ConnectionString = config.AppInsightsConnectionString,
     };
-
     services.AddApplicationInsightsTelemetryWorkerService(options);
+    
+    // Code dependencies
     services.TryAddTransient<HttpClient, HttpClient>();
     services.AddTransient<IContentfulClient>(servicesProvider => {
         var httpClient = servicesProvider.GetRequiredService<HttpClient>();
@@ -41,10 +49,11 @@ builder.ConfigureServices((context, services) =>
         var documentFetcher =   servicesProvider.GetRequiredService<IDocumentFetcher>();
         var searchEndpointUri = new Uri(config.Endpoint);
         var searchIndexClient = new SearchIndexClient(searchEndpointUri, new AzureKeyCredential(config.ApiKey));
-        return new ResourcesIndexer(searchIndexClient, documentFetcher, logger);
+        var telemtryClient = servicesProvider.GetRequiredService<TelemetryClient>();
+        return new ResourcesIndexer(searchIndexClient, documentFetcher, logger, telemtryClient);
     });
 
-    services.AddHostedService<IndexingService>();
+    
 });
 
 using (var host = builder.Build())

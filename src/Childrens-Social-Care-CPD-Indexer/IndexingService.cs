@@ -1,5 +1,3 @@
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights;
 using Childrens_Social_Care_CPD_Indexer.Core;
 
 namespace Childrens_Social_Care_CPD_Indexer;
