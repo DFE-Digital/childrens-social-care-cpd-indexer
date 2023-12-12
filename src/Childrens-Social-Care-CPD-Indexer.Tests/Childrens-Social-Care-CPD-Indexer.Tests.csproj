@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Childrens-Social-Care-CPD-Indexer-Old\Childrens-Social-Care-CPD-Indexer-Old.csproj" />
+    <ProjectReference Include="..\Childrens-Social-Care-CPD-Indexer\Childrens-Social-Care-CPD-Indexer.csproj" />
   </ItemGroup>
 
 </Project>

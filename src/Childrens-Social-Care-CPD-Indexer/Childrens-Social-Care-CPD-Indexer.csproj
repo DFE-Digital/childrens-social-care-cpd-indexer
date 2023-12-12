@@ -9,6 +9,10 @@
     <DockerFastModeProjectMountDirectory>/home/site/wwwroot</DockerFastModeProjectMountDirectory>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
+    <ItemGroup>
+	    <InternalsVisibleTo Include="Childrens-Social-Care-CPD-Indexer.Tests" />
+	    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Search.Documents" Version="11.5.1" />
     <PackageReference Include="contentful.csharp" Version="7.5.0" />

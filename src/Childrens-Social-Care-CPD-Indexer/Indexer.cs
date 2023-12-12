@@ -4,10 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Childrens_Social_Care_CPD_Indexer;
 
-public class Indexer(ILoggerFactory loggerFactory, IResourcesIndexer resourcesIndexer, IResourcesIndexerConfig config)
+public class Indexer(ILogger<Indexer> logger, IResourcesIndexer resourcesIndexer, IResourcesIndexerConfig config)
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger<Indexer>();
-
     [Function("IndexResources")]
     public async Task Run([TimerTrigger("0 0 * * SUN"
     #if DEBUG
@@ -15,7 +13,7 @@ public class Indexer(ILoggerFactory loggerFactory, IResourcesIndexer resourcesIn
     #endif
         )] TimerInfo myTimer, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Indexing started at: {startTime}", DateTime.Now);
+        logger.LogInformation("Indexing started at: {startTime}", DateTime.Now);
         try
         {
             if (config.RecreateIndex)
@@ -29,11 +27,11 @@ public class Indexer(ILoggerFactory loggerFactory, IResourcesIndexer resourcesIn
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception occured");
+            logger.LogError(ex, "Unhandled exception occured");
         }
         finally
         {
-            _logger.LogInformation("Indexing finished at: {finishTime}", DateTime.Now);
+            logger.LogInformation("Indexing finished at: {finishTime}", DateTime.Now);
         }
     }
 }

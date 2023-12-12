@@ -1,5 +1,6 @@
 ﻿using Childrens_Social_Care_CPD_Indexer.Core;
 using Microsoft.ApplicationInsights;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NSubstitute.ExceptionExtensions;
 
@@ -7,28 +8,18 @@ namespace Childrens_Social_Care_CPD_Indexer.Tests;
 
 public class IndexingServiceTests
 {
-    private ILogger<IndexingService> _logger;
+    private ILogger<Indexer> _logger;
     private IResourcesIndexerConfig _config;
     private IResourcesIndexer _indexer;
-    private IndexingService _sut;
+    private Indexer _sut;
 
     [SetUp]
     public void Setup()
     {
-        _logger = Substitute.For<ILogger<IndexingService>>();
+        _logger = Substitute.For<ILogger<Indexer>>();
         _config = Substitute.For<IResourcesIndexerConfig>();
         _indexer = Substitute.For<IResourcesIndexer>();
-        _sut = new IndexingService(_indexer, _logger, _config);
-    }
-
-    [Test]
-    public void StopAsync_Returns_Completed_Task()
-    {
-        // act
-        var task = _sut.StopAsync(default);
-        
-        // assert
-        task.IsCompleted.Should().BeTrue();
+        _sut = new Indexer(_logger, _indexer, _config);
     }
 
     [Test]
@@ -38,7 +29,7 @@ public class IndexingServiceTests
         _config.RecreateIndex.Returns(true);
 
         // act
-        await _sut.StartAsync(default);
+        await _sut.Run(new TimerInfo());
 
         // assert
         await _indexer.Received(1).DeleteIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -52,7 +43,7 @@ public class IndexingServiceTests
         _config.RecreateIndex.Returns(false);
 
         // act
-        await _sut.StartAsync(default);
+        await _sut.Run(new TimerInfo());
 
         // assert
         await _indexer.Received(1).PopulateIndexAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
@@ -67,7 +58,7 @@ public class IndexingServiceTests
         _indexer.DeleteIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Throws(exception);
 
         // act
-        await _sut.StartAsync(default);
+        await _sut.Run(new TimerInfo());
 
         // assert
         _logger.Received(1).LogError(exception, "Unhandled exception occured");
