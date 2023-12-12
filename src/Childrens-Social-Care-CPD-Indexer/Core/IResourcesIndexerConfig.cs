@@ -1,6 +1,6 @@
 ﻿namespace Childrens_Social_Care_CPD_Indexer.Core;
 
-internal interface IResourcesIndexerConfig
+public interface IResourcesIndexerConfig
 {
     string ApiKey { get; }
     string AppInsightsConnectionString { get; }

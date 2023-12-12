@@ -1,4 +1,5 @@
 ﻿using Childrens_Social_Care_CPD_Indexer.Core;
+using Microsoft.Extensions.Configuration;
 
 namespace Childrens_Social_Care_CPD_Indexer;
 

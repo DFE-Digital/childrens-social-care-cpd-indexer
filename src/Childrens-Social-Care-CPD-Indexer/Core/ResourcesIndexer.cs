@@ -3,6 +3,7 @@ using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.Logging;
 
 namespace Childrens_Social_Care_CPD_Indexer.Core;
 

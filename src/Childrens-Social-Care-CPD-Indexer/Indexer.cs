@@ -1,10 +1,17 @@
 using Childrens_Social_Care_CPD_Indexer.Core;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 
 namespace Childrens_Social_Care_CPD_Indexer;
 
-internal class IndexingService(IResourcesIndexer resourcesIndexer, ILogger<IndexingService> logger, IResourcesIndexerConfig config) : IHostedService
+public class Indexer(ILogger<Indexer> logger, IResourcesIndexer resourcesIndexer, IResourcesIndexerConfig config)
 {
-    public async Task StartAsync(CancellationToken cancellationToken)
+    [Function("IndexResources")]
+    public async Task Run([TimerTrigger("0 0 * * SUN"
+    #if DEBUG
+            , RunOnStartup= true
+    #endif
+        )] TimerInfo myTimer, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Indexing started at: {startTime}", DateTime.Now);
         try
@@ -26,10 +33,5 @@ internal class IndexingService(IResourcesIndexer resourcesIndexer, ILogger<Index
         {
             logger.LogInformation("Indexing finished at: {finishTime}", DateTime.Now);
         }
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
     }
 }
