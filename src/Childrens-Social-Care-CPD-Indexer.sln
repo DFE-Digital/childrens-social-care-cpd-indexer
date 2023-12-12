@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Childrens-Social-Care-CPD-Indexer", "Childrens-Social-Care-CPD-Indexer\Childrens-Social-Care-CPD-Indexer.csproj", "{D806CCEA-5505-4CD9-98B6-08A5F161C06A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Childrens-Social-Care-CPD-Indexer-Old", "Childrens-Social-Care-CPD-Indexer-Old\Childrens-Social-Care-CPD-Indexer-Old.csproj", "{D806CCEA-5505-4CD9-98B6-08A5F161C06A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Childrens-Social-Care-CPD-Indexer.Tests", "Childrens-Social-Care-CPD-Indexer.Tests\Childrens-Social-Care-CPD-Indexer.Tests.csproj", "{6984BF56-808E-4294-949D-FFE4B02CCE16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Childrens-Social-Care-CPD-Indexer.Tests", "Childrens-Social-Care-CPD-Indexer.Tests\Childrens-Social-Care-CPD-Indexer.Tests.csproj", "{6984BF56-808E-4294-949D-FFE4B02CCE16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Childrens-Social-Care-CPD-Indexer", "Childrens-Social-Care-CPD-Indexer\Childrens-Social-Care-CPD-Indexer.csproj", "{3555944D-1913-4979-B5BF-991C7064613E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{6984BF56-808E-4294-949D-FFE4B02CCE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6984BF56-808E-4294-949D-FFE4B02CCE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6984BF56-808E-4294-949D-FFE4B02CCE16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3555944D-1913-4979-B5BF-991C7064613E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3555944D-1913-4979-B5BF-991C7064613E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3555944D-1913-4979-B5BF-991C7064613E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3555944D-1913-4979-B5BF-991C7064613E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
