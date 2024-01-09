@@ -3,7 +3,19 @@ name: Function App Deploy
 on:
   release:
     types: [published]
-
+    inputs:
+      workspace:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'Dev'
+        type: choice
+        options:
+          - Dev
+          - Test
+          - Pre-Prod
+          - Prod
+          - Load-Test
+          
 jobs:
   build:
     name: 'Function App Deploy'
@@ -14,5 +26,5 @@ jobs:
         with:
           creds: '{"clientId":"${{ secrets.FAD_CLIENT_ID }}","clientSecret":"${{ secrets.FAD_CLIENT_SECRET }}","subscriptionId":"${{ secrets.FAD_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.FAD_TENANT_ID }}"}'
 
-      - name: Deploy Function App (Dev)
-        run:  az functionapp deployment source config --branch main --manual-integration --name s185d01-search --repo-url https://github.com/DFE-Digital/childrens-social-care-cpd-indexer --resource-group s185d01-childrens-social-care-cpd-rg
+      - name: Deploy Function App
+        run:  az functionapp deployment source config --branch main --manual-integration --name ${{ vars.FAD_FUNCTION_APP_NAME }} --repo-url ${{ github.event.repository.name }} --resource-group ${{ vars.FAD_RESOURCE_GROUP }}
