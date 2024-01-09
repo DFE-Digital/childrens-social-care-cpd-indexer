@@ -1,9 +1,12 @@
 name: Function App Deploy
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
     inputs:
+      tag:
+        description: 'App Tag to deploy'
+        required: true
+        default: 'v1.0.0'
       workspace:
         description: 'Environment to deploy to'
         required: true
