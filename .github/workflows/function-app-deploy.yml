@@ -30,5 +30,8 @@ jobs:
         with:
           creds: '{"clientId":"${{ secrets.FAD_CLIENT_ID }}","clientSecret":"${{ secrets.FAD_CLIENT_SECRET }}","subscriptionId":"${{ secrets.FAD_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.FAD_TENANT_ID }}"}'
 
+      - name: Fetch release
+        run:  wget https://github.com/${{ github.event.repository.name }}/archive/refs/tags/${{ inputs.tag }}.zip
+        
       - name: Deploy Function App
-        run:  az functionapp deployment source config --branch main --manual-integration --name ${{ vars.FAD_FUNCTION_APP_NAME }} --repo-url ${{ github.event.repository.name }} --resource-group ${{ vars.FAD_RESOURCE_GROUP }}
+        run:  az functionapp deployment source config-zip --name ${{ vars.FAD_FUNCTION_APP_NAME }} --resource-group ${{ vars.FAD_RESOURCE_GROUP }} ${{ inputs.tag }}.zip
