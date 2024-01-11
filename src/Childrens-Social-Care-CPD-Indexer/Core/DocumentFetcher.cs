@@ -30,6 +30,7 @@ internal class DocumentFetcher(IContentfulClient client) : IDocumentFetcher
             Body = content.SearchSummary,
             CreatedAt = content.Sys!.CreatedAt.HasValue ? new DateTimeOffset(content.Sys.CreatedAt.Value) : null,
             UpdatedAt = content.Sys!.UpdatedAt.HasValue ? new DateTimeOffset(content.Sys.UpdatedAt.Value) : null, 
+            EstimatedReadingTime = content.EstimatedReadingTime,
             Tags = tags
         };
     }

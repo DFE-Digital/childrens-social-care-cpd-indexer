@@ -20,12 +20,15 @@ internal partial class CpdDocument(string id)
     [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
     public string? Body { get; set; }
     
-    [SimpleField(IsSortable = true, IsFilterable = true)]
+    [SimpleField(IsSortable = true)]
     public DateTimeOffset? CreatedAt { get; set; }
     
-    [SimpleField(IsSortable = true, IsFilterable = true)]
+    [SimpleField(IsSortable = true)]
     public DateTimeOffset? UpdatedAt { get; set; }
-    
+
+    [SimpleField]
+    public int? EstimatedReadingTime { get; set; }
+
     [SimpleField(IsFilterable = true, IsFacetable = true)]
     public IEnumerable<string>? Tags { get; set; }
 }
