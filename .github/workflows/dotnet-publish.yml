@@ -27,11 +27,17 @@ jobs:
         working-directory: ./src
 
       - name: Zip output
-        run: zip -r ../${{ env.RELEASE_TAG }}.zip ./
+        run: zip -r ../${{ env.RELEASE_TAG }}.build.zip ./
         working-directory: ./src/publish
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: resource-indexing-deployment
-          path: ./src/${{ env.RELEASE_TAG }}.zip
+          files: ./src/${{ env.RELEASE_TAG }}.build.zip
+
+      # - name: Upload artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: resource-indexing-deployment
+      #     path: ./src/${{ env.RELEASE_TAG }}.zip
