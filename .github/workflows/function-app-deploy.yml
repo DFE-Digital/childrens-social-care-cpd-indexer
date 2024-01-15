@@ -34,4 +34,4 @@ jobs:
         run:  wget https://github.com/${{ github.repository }}/releases/download/${{ inputs.tag }}/${{ inputs.tag }}.build.zip
         
       - name: Deploy Function App
-        run:  az functionapp deployment source config-zip --name ${{ vars.FAD_FUNCTION_APP_NAME }} --resource-group ${{ vars.FAD_RESOURCE_GROUP }} --src ${{ inputs.tag }}.zip
+        run:  az functionapp deployment source config-zip --name ${{ vars.FAD_FUNCTION_APP_NAME }} --resource-group ${{ vars.FAD_RESOURCE_GROUP }} --src ${{ inputs.tag }}.build.zip
