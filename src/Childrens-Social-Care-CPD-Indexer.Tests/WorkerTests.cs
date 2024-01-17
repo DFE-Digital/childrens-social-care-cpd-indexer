@@ -1,25 +1,33 @@
 ﻿using Childrens_Social_Care_CPD_Indexer.Core;
-using Microsoft.ApplicationInsights;
-using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute.ExceptionExtensions;
 
 namespace Childrens_Social_Care_CPD_Indexer.Tests;
 
-public class IndexingServiceTests
+public class WorkerTests
 {
-    private ILogger<Indexer> _logger;
+    private ILogger<Worker> _logger;
     private IResourcesIndexerConfig _config;
     private IResourcesIndexer _indexer;
-    private Indexer _sut;
+    private IHostApplicationLifetime _hostingApplicationLifetime;
+    private Worker _sut;
 
     [SetUp]
     public void Setup()
     {
-        _logger = Substitute.For<ILogger<Indexer>>();
+        _logger = Substitute.For<ILogger<Worker>>();
         _config = Substitute.For<IResourcesIndexerConfig>();
         _indexer = Substitute.For<IResourcesIndexer>();
-        _sut = new Indexer(_logger, _indexer, _config);
+        _hostingApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
+
+        _sut = new Worker(_logger, _indexer, _config, _hostingApplicationLifetime);
+    }
+
+    [TearDown]
+    public void Teardown()
+    {
+        _sut.Dispose();
     }
 
     [Test]
@@ -27,9 +35,10 @@ public class IndexingServiceTests
     {
         // arrange
         _config.RecreateIndex.Returns(true);
+        var cancellationTokenSource = new CancellationTokenSource();
 
         // act
-        await _sut.Run(new TimerInfo());
+        await _sut.StartAsync(cancellationTokenSource.Token);
 
         // assert
         await _indexer.Received(1).DeleteIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -41,9 +50,10 @@ public class IndexingServiceTests
     {
         // arrange
         _config.RecreateIndex.Returns(false);
+        var cancellationTokenSource = new CancellationTokenSource();
 
         // act
-        await _sut.Run(new TimerInfo());
+        await _sut.StartAsync(cancellationTokenSource.Token);
 
         // assert
         await _indexer.Received(1).PopulateIndexAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
@@ -56,9 +66,10 @@ public class IndexingServiceTests
         var exception = new InvalidOperationException();
         _config.RecreateIndex.Returns(true);
         _indexer.DeleteIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Throws(exception);
+        var cancellationTokenSource = new CancellationTokenSource();
 
         // act
-        await _sut.Run(new TimerInfo());
+        await _sut.StartAsync(cancellationTokenSource.Token);
 
         // assert
         _logger.Received(1).LogError(exception, "Unhandled exception occured");

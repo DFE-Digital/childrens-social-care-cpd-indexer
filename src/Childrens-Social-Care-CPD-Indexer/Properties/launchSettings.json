@@ -2,13 +2,14 @@
   "profiles": {
     "Childrens_Social_Care_CPD_Indexer": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7016"
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true
     },
     "Docker": {
-      "commandName": "Docker",
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "httpPort": 31453,
-      "useSSL": false
+      "commandName": "Docker"
     }
-  }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json"
 }
