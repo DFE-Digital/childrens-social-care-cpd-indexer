@@ -19,7 +19,7 @@ dotnet test
 Three configuration values are required to be set in the environment:
 * ``CPD_KEY_VAULT_NAME`` - the name of the keyvault to retrieve configuration from in a deployed environment
 * ``CPD_CONFIG_SECTION_NAME`` - this is the key name of the root of the configuration section that stores most of the application config
-* ``DEV__Application__Version`` - the application version
+* ``<CPD_CONFIG_SECTION_NAME>__Application__Version`` - the application version, note the prefix should be set to the above value, for example if `CPD_CONFIG_SECTION_NAME` was set to `DEV` then it would be `DEV__Application__Version`
 
 The remaining application configuration is stored within an IConfiguration section, named using (1) above. In a deployed environment this should be stored in Azure Key Vault.
 
