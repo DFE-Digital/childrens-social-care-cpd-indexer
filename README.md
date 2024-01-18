@@ -15,19 +15,41 @@ dotnet build
 dotnet test
 ```
 
-## Environment variables
-The following environment variables will need to be specified for the application to run:
+## Configuration
+Three configuration values are required to be set in the environment:
+* ``CPD_KEY_VAULT_NAME`` - the name of the keyvault to retrieve configuration from in a deployed environment
+* ``CPD_CONFIG_SECTION_NAME`` - this is the key name of the root of the configuration section that stores most of the application config
+* ``DEV__Application__Version`` - the application version
 
-| Variable name  | Type/Value | Description |
-| ------------- | ------------- | ------------- |
-| CPD_SEARCH_API_KEY | string | The Azure AI Search API key |
-| CPD_INSTRUMENTATION_CONNECTIONSTRING | string | The Azure ApplicationInsights connection string |
-| VCS-TAG | string | The application version |
-| CPD_SEARCH_BATCH_SIZE | integer (e.g. 10/20 etc) | The batch size for queries into Contentful |
-| CPD_SEARCH_ENDPOINT | string | The Azure AI Search endpoint |
-| CPD_SEARCH_INDEX_NAME | string | The Azure AI Search index name to access/create |
-| CPD_DELIVERY_KEY | string | The Contentful delivery API key |
-| CPD_CONTENTFUL_ENVIRONMENT | string | The Contentful enviroment id |
-| CPD_SPACE_ID | string | The Contentful space id |
-| CPD_SEARCH_RECREATE_INDEX_ON_REBUILD | boolean (true/false) | Whether to delete the index and recreate before populating |
+The remaining application configuration is stored within an IConfiguration section, named using (1) above. In a deployed environment this should be stored in Azure Key Vault.
 
+The configuration under the root key takes the following hierarchical structure:
+```
+    ApplicationInsights
+        ConnectionString
+    Contentful
+        DeliveryKey
+        Environment
+        SpaceId
+    SearchIndexing
+        ApiKey
+        BatchSize
+        Endpoint
+        IndexName
+        RecreateIndex
+```
+
+
+### Local developer configuration
+For development, this structure can be configured in the `secrets.json` file for the project.
+Also make sure you set `LOCAL_ENVIRONMENT` to true,  otherwise the application will try to initialise key vault. `LOCAL_ENVIRONMENT` is not required for any other scenario.
+
+### Deployed environments
+Key names for secrets are built from the full path to the config key, separating each level with two dash characters (--). So if `CPD_CONFIG_SECTION_NAME` is set to `DEV` then it would be:
+```
+DEV--ApplicationInsights--ConnectionString
+DEV--ApplicationVersion
+DEV--Contentful--DeliveryKey
+...
+```
+Note this format is for **Key Vault only**.

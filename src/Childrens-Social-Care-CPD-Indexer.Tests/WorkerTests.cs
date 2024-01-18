@@ -8,7 +8,7 @@ namespace Childrens_Social_Care_CPD_Indexer.Tests;
 public class WorkerTests
 {
     private ILogger<Worker> _logger;
-    private IResourcesIndexerConfig _config;
+    private IApplicationConfiguration _config;
     private IResourcesIndexer _indexer;
     private IHostApplicationLifetime _hostingApplicationLifetime;
     private Worker _sut;
@@ -17,7 +17,7 @@ public class WorkerTests
     public void Setup()
     {
         _logger = Substitute.For<ILogger<Worker>>();
-        _config = Substitute.For<IResourcesIndexerConfig>();
+        _config = Substitute.For<IApplicationConfiguration>();
         _indexer = Substitute.For<IResourcesIndexer>();
         _hostingApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
@@ -34,7 +34,7 @@ public class WorkerTests
     public async Task StartAsync_Deletes_Index_If_Configured()
     {
         // arrange
-        _config.RecreateIndex.Returns(true);
+        _config.SearchIndexing.RecreateIndex.Returns(true);
         var cancellationTokenSource = new CancellationTokenSource();
 
         // act
@@ -49,7 +49,7 @@ public class WorkerTests
     public async Task StartAsync_Populates_Index()
     {
         // arrange
-        _config.RecreateIndex.Returns(false);
+        _config.SearchIndexing.RecreateIndex.Returns(false);
         var cancellationTokenSource = new CancellationTokenSource();
 
         // act
@@ -64,7 +64,7 @@ public class WorkerTests
     {
         // arrange
         var exception = new InvalidOperationException();
-        _config.RecreateIndex.Returns(true);
+        _config.SearchIndexing.RecreateIndex.Returns(true);
         _indexer.DeleteIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Throws(exception);
         var cancellationTokenSource = new CancellationTokenSource();
 
