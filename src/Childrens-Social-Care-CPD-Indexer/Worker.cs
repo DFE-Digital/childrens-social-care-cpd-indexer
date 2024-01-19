@@ -6,15 +6,15 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IResourcesIndexer _resourcesIndexer;
-    private readonly IResourcesIndexerConfig _config;
+    private readonly IApplicationConfiguration _config;
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
 
-    public Worker(ILogger<Worker> logger, IResourcesIndexer resourcesIndexer, IResourcesIndexerConfig config, IHostApplicationLifetime hostApplicationLifetime)
+    public Worker(ILogger<Worker> logger, IResourcesIndexer resourcesIndexer, IApplicationConfiguration applicationConfiguration, IHostApplicationLifetime hostApplicationLifetime)
     {
         _logger = logger;
         _resourcesIndexer = resourcesIndexer;
-        _config = config;
         _hostApplicationLifetime = hostApplicationLifetime;
+        _config = applicationConfiguration;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken) => 
@@ -25,12 +25,12 @@ public class Worker : BackgroundService
         _logger.LogInformation("Indexing started at: {startTime}", DateTime.Now);
         try
         {
-            if (_config.RecreateIndex)
+            if (_config.SearchIndexing.RecreateIndex)
             {
-                await _resourcesIndexer.DeleteIndexAsync(_config.IndexName, stoppingToken);
+                await _resourcesIndexer.DeleteIndexAsync(_config.SearchIndexing.IndexName, stoppingToken);
             }
-            await _resourcesIndexer.CreateIndexAsync(_config.IndexName, stoppingToken);
-            await _resourcesIndexer.PopulateIndexAsync(_config.IndexName, _config.BatchSize, stoppingToken);
+            await _resourcesIndexer.CreateIndexAsync(_config.SearchIndexing.IndexName, stoppingToken);
+            await _resourcesIndexer.PopulateIndexAsync(_config.SearchIndexing.IndexName, _config.SearchIndexing.BatchSize, stoppingToken);
 
         }
         catch (Exception ex)
