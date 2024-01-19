@@ -29,7 +29,7 @@ public class WorkerTests
         var sendItems = new List<ITelemetry>();
         var channel = Substitute.For<ITelemetryChannel>();
         configuration.TelemetryChannel = channel;
-        configuration.InstrumentationKey = Guid.NewGuid().ToString();
+        configuration.ConnectionString = $"InstrumentationKey={Guid.NewGuid()};IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/";
         configuration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
         _telemetryClient = new TelemetryClient(configuration);
 
