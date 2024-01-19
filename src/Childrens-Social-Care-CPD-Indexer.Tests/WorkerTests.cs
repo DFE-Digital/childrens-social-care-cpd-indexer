@@ -1,4 +1,7 @@
 ﻿using Childrens_Social_Care_CPD_Indexer.Core;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute.ExceptionExtensions;
@@ -11,6 +14,7 @@ public class WorkerTests
     private IApplicationConfiguration _config;
     private IResourcesIndexer _indexer;
     private IHostApplicationLifetime _hostingApplicationLifetime;
+    private TelemetryClient _telemetryClient;
     private Worker _sut;
 
     [SetUp]
@@ -21,7 +25,15 @@ public class WorkerTests
         _indexer = Substitute.For<IResourcesIndexer>();
         _hostingApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
-        _sut = new Worker(_logger, _indexer, _config, _hostingApplicationLifetime);
+        var configuration = new TelemetryConfiguration();
+        var sendItems = new List<ITelemetry>();
+        var channel = Substitute.For<ITelemetryChannel>();
+        configuration.TelemetryChannel = channel;
+        configuration.InstrumentationKey = Guid.NewGuid().ToString();
+        configuration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
+        _telemetryClient = new TelemetryClient(configuration);
+
+        _sut = new Worker(_logger, _indexer, _config, _hostingApplicationLifetime, _telemetryClient);
     }
 
     [TearDown]
