@@ -1,45 +1,33 @@
 using Childrens_Social_Care_CPD_Indexer.Core;
+using Microsoft.ApplicationInsights;
 
 namespace Childrens_Social_Care_CPD_Indexer;
 
-public class Worker : BackgroundService
+public class Worker(ILogger<Worker> logger, IResourcesIndexer resourcesIndexer, IApplicationConfiguration applicationConfiguration, IHostApplicationLifetime hostApplicationLifetime, TelemetryClient telemetryClient) : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
-    private readonly IResourcesIndexer _resourcesIndexer;
-    private readonly IApplicationConfiguration _config;
-    private readonly IHostApplicationLifetime _hostApplicationLifetime;
-
-    public Worker(ILogger<Worker> logger, IResourcesIndexer resourcesIndexer, IApplicationConfiguration applicationConfiguration, IHostApplicationLifetime hostApplicationLifetime)
-    {
-        _logger = logger;
-        _resourcesIndexer = resourcesIndexer;
-        _hostApplicationLifetime = hostApplicationLifetime;
-        _config = applicationConfiguration;
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken) => 
-        await DoWork(stoppingToken).ContinueWith(task => _hostApplicationLifetime.StopApplication(), stoppingToken);
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken) => await DoWork(stoppingToken).ContinueWith(task => hostApplicationLifetime.StopApplication(), stoppingToken);
 
     private async Task DoWork(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Indexing started at: {startTime}", DateTime.Now);
+        logger.LogInformation("Indexing started at: {startTime}", DateTime.Now);
         try
         {
-            if (_config.SearchIndexing.RecreateIndex)
+            if (applicationConfiguration.SearchIndexing.RecreateIndex)
             {
-                await _resourcesIndexer.DeleteIndexAsync(_config.SearchIndexing.IndexName, stoppingToken);
+                await resourcesIndexer.DeleteIndexAsync(applicationConfiguration.SearchIndexing.IndexName, stoppingToken);
             }
-            await _resourcesIndexer.CreateIndexAsync(_config.SearchIndexing.IndexName, stoppingToken);
-            await _resourcesIndexer.PopulateIndexAsync(_config.SearchIndexing.IndexName, _config.SearchIndexing.BatchSize, stoppingToken);
+            await resourcesIndexer.CreateIndexAsync(applicationConfiguration.SearchIndexing.IndexName, stoppingToken);
+            await resourcesIndexer.PopulateIndexAsync(applicationConfiguration.SearchIndexing.IndexName, applicationConfiguration.SearchIndexing.BatchSize, stoppingToken);
 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception occured");
+            logger.LogError(ex, "Unhandled exception occured");
         }
         finally
         {
-            _logger.LogInformation("Indexing finished at: {finishTime}", DateTime.Now);
+            logger.LogInformation("Indexing finished at: {finishTime}", DateTime.Now);
+            await telemetryClient.FlushAsync(stoppingToken);
         }
     }
 }
