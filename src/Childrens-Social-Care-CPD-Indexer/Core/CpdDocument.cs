@@ -11,7 +11,7 @@ internal partial class CpdDocument(string id)
     [SimpleField(IsKey = true)]
     public string? Id { get; set; } = Base64UrlEncoder.Encode(id);
 
-    [SimpleField()]
+    [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
     public string? Title { get; set; }
 
     [SimpleField(IsFilterable = true, IsFacetable = true)]
