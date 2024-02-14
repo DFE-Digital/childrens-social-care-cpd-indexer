@@ -20,7 +20,7 @@ if (!builder.Configuration.GetValue<bool>("LOCAL_ENVIRONMENT"))
     builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
 }
 
-builder.Configuration.Bind(builder.Configuration.GetValue<string>("CPD_CONFIG_SECTION_NAME") ?? string.Empty, applicationConfiguration);
+builder.Configuration.Bind("IndexingConfig", applicationConfiguration);
 builder.Services.AddSingleton<IApplicationConfiguration>(applicationConfiguration);
 // Logging
 
