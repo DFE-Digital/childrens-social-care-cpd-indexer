@@ -1,6 +1,6 @@
 ﻿namespace Childrens_Social_Care_CPD_Indexer.Core;
 
-internal interface IResourcesIndexer
+public interface IResourcesIndexer
 {
     Task CreateIndexAsync(string indexName, CancellationToken cancellationToken);
     Task DeleteIndexAsync(string indexName, CancellationToken cancellationToken);

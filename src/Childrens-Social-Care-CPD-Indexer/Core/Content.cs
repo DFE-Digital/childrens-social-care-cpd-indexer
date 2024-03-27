@@ -25,6 +25,7 @@ internal class Content : IContent
     public List<IContent>? Items { get; set; }
     public IContent? Navigation { get; set; }
     public IContent? RelatedContent { get; set; }
+    public int? EstimatedReadingTime { get; set; }
 
     [JsonProperty("$metadata")]
     public ContentfulMetadata? Metadata { get; set; }
