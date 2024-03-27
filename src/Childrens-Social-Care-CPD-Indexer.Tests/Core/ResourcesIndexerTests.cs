@@ -1,15 +1,44 @@
 ﻿using Azure;
+using Azure.Core;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Childrens_Social_Care_CPD_Indexer.Core;
 using Microsoft.Extensions.Logging;
+using NSubstitute.ExceptionExtensions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Childrens_Social_Care_CPD_Indexer.Tests.Core;
 
-public class ResourcesIndexerTest
+internal sealed class MockResponse : Response
 {
-    private ILogger _logger;
+    public override int Status => 404;
+    public override string ReasonPhrase => string.Empty;
+
+    public override Stream? ContentStream
+    {
+        get => new MemoryStream();
+        set => throw new NotImplementedException();
+    }
+    public override string ClientRequestId
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
+
+    public override void Dispose() => throw new NotImplementedException();
+    protected override bool ContainsHeader(string name) => false;
+    protected override IEnumerable<HttpHeader> EnumerateHeaders() => Array.Empty<HttpHeader>();
+    protected override bool TryGetHeader(string name, [NotNullWhen(true)] out string? value) {
+        value = null;
+        return false;
+    }
+    protected override bool TryGetHeaderValues(string name, [NotNullWhen(true)] out IEnumerable<string>? values) => throw new NotImplementedException();
+}
+
+public class ResourcesIndexerTests
+{
+    private ILogger<ResourcesIndexer> _logger;
     private SearchIndexClient _client;
     private IDocumentFetcher _documentFetcher;
     private ResourcesIndexer _sut;
@@ -21,16 +50,15 @@ public class ResourcesIndexerTest
         _client = Substitute.For<SearchIndexClient>();
         _documentFetcher = Substitute.For<IDocumentFetcher>();
         
-        _sut = new ResourcesIndexer(_client, _documentFetcher, _logger);
+        _sut = new ResourcesIndexer(_client, _documentFetcher, _logger, MockTelemetryClient.Create());
     }
     
     [Test]
     public async Task DeleteIndexAsync_Skips_Deletion_If_Index_Does_Not_Exist()
     {
         // arrange
-        var response = Substitute.For<Response<SearchIndex>>();
-        response.HasValue.Returns(false);
-        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(response));
+        var exception = new RequestFailedException(new MockResponse());
+        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Throws(exception);
 
         // act
         await _sut.DeleteIndexAsync("foo");
@@ -77,9 +105,8 @@ public class ResourcesIndexerTest
     public async Task CreateIndexAsync_Creates_The_Index()
     {
         // arrange
-        var getIndexResult = Substitute.For<Response<SearchIndex>>();
-        getIndexResult.HasValue.Returns(false);
-        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(getIndexResult));
+        var exception = new RequestFailedException(new MockResponse());
+        _client.GetIndexAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Throws(exception);
 
         SearchIndex? searchIndex = null;
         await _client.CreateIndexAsync(Arg.Do<SearchIndex>(x => searchIndex = x), Arg.Any<CancellationToken>());
@@ -141,7 +168,6 @@ public class ResourcesIndexerTest
 
         await _sut.PopulateIndexAsync("foo", 10);
 
-        await client.Received(2)
-            .UploadDocumentsAsync(documents, Arg.Any<IndexDocumentsOptions>(), Arg.Any<CancellationToken>());
+        await client.Received(2).UploadDocumentsAsync(documents, Arg.Any<IndexDocumentsOptions>(), Arg.Any<CancellationToken>());
     }
 }

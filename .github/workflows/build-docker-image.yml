@@ -1,14 +1,11 @@
 name: Docker Publish
-
 on:
   release:
     types: [published]
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   RELEASE_TAG: ${{ github.event.release.tag_name }}
-
 jobs:
   build:
     name: 'Docker Publish'
@@ -18,18 +15,15 @@ jobs:
       packages: write
       # This is used to complete the identity challenge with sigstore/fulcio when running outside of PRs.
       id-token: write
-
     steps:
       # Checkout the release tag version
       - name: Checkout repository ${{ env.RELEASE_TAG }}
         uses: actions/checkout@v3
         with:
           ref: ${{ env.RELEASE_TAG }}
-
       # Get git commit hash
       - name: Get short hash
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
       # Need to lower case the image name for the docker tags when publishing
       - name: Downcase IMAGE_NAME variable
         run:  echo "IMAGE_NAME_LOWER=${IMAGE_NAME,,}" >> $GITHUB_ENV
@@ -37,19 +31,15 @@ jobs:
       # Sort out the image tags 
       - name: Set initial tag
         run: echo "IMAGE_TAGS=${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:${{ env.RELEASE_TAG }}" >> $GITHUB_ENV
-
       - name: Add latest tag if we're not production release
         if: contains(env.RELEASE_TAG, 'next')
         run: echo "IMAGE_TAGS=${{ env.IMAGE_TAGS }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest" >> $GITHUB_ENV
-
       #debug
       - name: Log the tags
         run: echo "Calculated tags value => ${{ env.IMAGE_TAGS }}"
-
       # Setup docker build tool
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3
-
       # Login against a Docker registry
       - name: Log into registry ${{ env.REGISTRY }}
         uses: docker/login-action@v3
@@ -57,14 +47,12 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       # Extract metadata (tags, labels) for Docker
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       # Build and push Docker image with Buildx (don't push on PR)
       - name: Build and push Docker image
         id: build-and-push
@@ -79,8 +67,7 @@ jobs:
             VCSREF=${{ env.sha_short }}
             VCSTAG=${{ env.RELEASE_TAG }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
-
+          cache-to: type=gha,mode=max          
       # Sign the resulting Docker image digest.
       # This will only write to the public Rekor transparency log when the Docker
       # repository is public to avoid leaking data.  If you would like to publish
